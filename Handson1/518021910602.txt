@@ -1,0 +1,38 @@
+Question1
+action2 中创建了账户B，但是没有commit，因此B不会被写入DB中。
+
+Question2
+A和C应该存在，且A=900，C=3100
+
+Question3
+因为只有当action end的时候，数据才会真正写入道DB中，而action3在end之前crash了，因此还未写入DB。
+
+Question4
+A=900 C=3100。因为action1和3已经commit了，它们的操作应该被恢复，而action2没有commit，因此不该回复。
+运行结果符合期望。
+
+Question5
+因为action1和3已经commit了，它们的操作应该被恢复，而action2没有commit，因此不该回复。
+运行结果符合期望。
+
+Question6
+Losers指未commit的，Winner指已经commit但未end的，Done指已经end的
+
+Question7
+action 2的创建B之后没有commit，因此不会被写入到DB中
+
+Question8
+6 lines. checkpoint减少了rollback的次数，提高了效率
+
+Question9
+第二次recovery后与第一次recovery后的DB有相同结果。这种性质称为幂等性
+
+Question10
+加入checkpoint后，rollback向前扫描至checkpoint处时，已经知道了所有loser，之后向前扫描的操作只是
+为了保证loser的操作被undo，然后再redo winner和done的全部操作。而在这之前的committed和end的
+action已经由checkpoint保证了正确性。recovery最后会给全部winners补上end，因此原来的winner会变成
+done，这导致了状态变化，但这不会影响正确性
+
+Question11
+第一次crash后，执行undo，可以看到undo了两个action2的操作，而第二次crash后再执行undo，则不会。
+因为第一次recovery时，会给loser加上abort，因此不需要再执行undo了。
